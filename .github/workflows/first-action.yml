@@ -22,7 +22,7 @@ jobs:
       - name: Run PR Agent
         uses: qodo-ai/pr-agent@main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           CONFIG.MODEL: "vertex_ai/gemini-3.1-pro"
           VERTEXAI_PROJECT: ${{ secrets.VERTEX_PROJECT_ID }}
           VERTEXAI_LOCATION: ${{ secrets.VERTEX_REGION }}
