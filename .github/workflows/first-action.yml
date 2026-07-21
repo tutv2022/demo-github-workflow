@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           VERTEXAI_PROJECT: ${{ secrets.VERTEX_PROJECT_ID }}
           VERTEXAI_LOCATION: global
-          config.model: vertex_ai/gemini-3.1-pro-preview
+          config.model: gemini-3.1-pro-preview
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "false"
           github_action_config.auto_improve: "false"
