@@ -6,7 +6,7 @@
 // Naive config loader with a few issues for the AI reviewer.
 
 std::map<std::string, std::string> loadConfig(const std::string& path) {
-    std::map<std::string, std::string> config;
+    std::map<std::string, std::string> config2;
     std::ifstream file(path);
     // BUG: no check that the file actually opened.
 
