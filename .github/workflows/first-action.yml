@@ -1,10 +1,31 @@
-name: First Workflow
-on: workflow_dispatch
+name: AI Code Review (Gemini 3.1)
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+
 jobs:
-  first-job:
+  review:
+    # TRIGGER LOGIC:
+    # 1. Automatic: PR adds more than 150 lines
+    # 2. Manual: Developer adds the 'ai-review' label
+    if: |
+      (github.event.pull_request.additions > 150 ||
+      contains(github.event.pull_request.labels.*.name, 'ai-review')) &&
+      github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
     steps:
-      - name: Print greeting
-        run: echo "Hello World!"
-      - name: Print goodbye
-        run: echo "Done - bye!"
+      - name: Run PR Agent
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG.MODEL: "vertex_ai/gemini-3.1-pro"
+          VERTEXAI_PROJECT: ${{ secrets.VERTEX_PROJECT_ID }}
+          VERTEXAI_LOCATION: ${{ secrets.VERTEX_REGION }}
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.VERTEX_SERVICE_ACCOUNT_JSON }}
+          # Force the agent to follow specific instructions
+          PR_REVIEWER.EXTRA_INSTRUCTIONS: "Focus on logic, edge cases, and architectural alignment."
