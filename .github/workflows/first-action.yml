@@ -38,9 +38,10 @@ jobs:
           VERTEXAI_PROJECT: ${{ secrets.VERTEX_PROJECT_ID }}
           VERTEXAI_LOCATION: global
           config.model: gemini-3.1-pro-preview
+          config.custom_model_max_tokens: "1048576"
           config.verbosity_level: "2"
           config.output_relevant_configurations: "true"
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "false"
-          github_action_config.auto_improve: "false"
+          github_action_config.auto_improve: "true"
           github_action_config.pr_actions: '["opened","reopened","synchronize","ready_for_review","labeled"]'
