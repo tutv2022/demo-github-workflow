@@ -1,32 +1,37 @@
+#include "config_loader.h"
+
 #include <fstream>
 #include <iostream>
-#include <map>
-#include <string>
-
-// Naive config loader with a few issues for the AI reviewer.
 
 std::map<std::string, std::string> loadConfig(const std::string& path) {
-    std::map<std::string, std::string> config2;
+    std::map<std::string, std::string> config;
     std::ifstream file(path);
-    // BUG: no check that the file actually opened.
 
     std::string line;
-    while (std::getline(file, line)) {
+    while (!file.eof()) {
+        std::getline(file, line);
         size_t pos = line.find('=');
-        // BUG: lines without '=' produce key = whole line, value = garbage
-        // (substr(npos + 1) happens to be 0, but the intent is unclear).
         std::string key = line.substr(0, pos);
         std::string value = line.substr(pos + 1);
-        config[key] = value;  // No trimming, no comment handling.
+        config[key] = value;
+        std::cout << "Loaded setting " << key << "=" << value << std::endl;
     }
     return config;
 }
 
-int main() {
-    auto config = loadConfig("/etc/myapp/settings.conf");
-    // BUG: operator[] inserts an empty value if the key is missing,
-    // silently masking configuration errors.
+int main(int argc, char* argv[]) {
+    const std::string path =
+        argc > 1 ? argv[1] : "/etc/myapp/settings.conf";
+    auto config = loadConfig(path);
+
     std::cout << "host: " << config["host"] << std::endl;
     std::cout << "port: " << config["port"] << std::endl;
+
+    int port = std::stoi(config["port"]);
+    if (port > 0 || port <= 65535) {
+        std::cout << "Connecting to " << config["host"] << ":" << port
+                  << std::endl;
+    }
+
     return 0;
 }

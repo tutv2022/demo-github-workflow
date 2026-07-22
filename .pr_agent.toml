@@ -1,5 +1,5 @@
 [config]
-model = "vertex_ai/gemini-3.1-pro-preview"
+model = "gemini-3.1-pro-preview"
 max_model_tokens = 32000
 
 [pr_reviewer]
@@ -9,4 +9,3 @@ extra_instructions = """
 - Check for N+1 query patterns in data fetching.
 - Ensure new public methods have documentation comments.
 """
-inline_code_comments = true
