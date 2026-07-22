@@ -4,10 +4,8 @@ max_model_tokens = 32000
 
 [pr_reviewer]
 extra_instructions = """
-- Always start the review summary with: PROMPT_OK_XYZ123
 - Focus on logic, edge cases, and architectural alignment.
 - Flag hardcoded secrets or environment variables.
 - Check for N+1 query patterns in data fetching.
 - Ensure new public methods have documentation comments.
 """
-inline_code_comments = true
