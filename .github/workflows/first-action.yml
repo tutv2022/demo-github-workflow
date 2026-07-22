@@ -38,6 +38,8 @@ jobs:
           VERTEXAI_PROJECT: ${{ secrets.VERTEX_PROJECT_ID }}
           VERTEXAI_LOCATION: global
           config.model: gemini-3.1-pro-preview
+          config.verbosity_level: "2"
+          config.output_relevant_configurations: "true"
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "false"
           github_action_config.auto_improve: "false"
