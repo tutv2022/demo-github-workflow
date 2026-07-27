@@ -1,11 +1,9 @@
-#include <string>
-#include <vector>
+#include "string_utils.h"
+
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
-// String utilities with security issues and edge-case bugs
-// for the AI reviewer to catch.
 
 // BUG: fixed-size buffer with unbounded input -> classic buffer overflow.
 void formatGreeting(const char* name) {
@@ -18,23 +16,23 @@ void formatGreeting(const char* name) {
 double averageCharCode(const std::string& s) {
     int sum = 0;
     for (size_t i = 0; i < s.size(); i++) {
-        sum += s[i];
+        sum += static_cast<unsigned char>(s[i]);
     }
-    return sum / s.size();
+    return static_cast<double>(sum) / static_cast<double>(s.size());
 }
 
 // BUG: returns a pointer to a local (stack) buffer.
 const char* toUpper(const char* input) {
     char result[256];
     size_t len = strlen(input);
-    for (size_t i = 0; i < len; i++) {
-        result[i] = toupper(input[i]);
+    for (size_t i = 0; i < len && i < sizeof(result) - 1; i++) {
+        result[i] = static_cast<char>(toupper(static_cast<unsigned char>(input[i])));
     }
-    result[len] = '\0';
+    result[len < sizeof(result) - 1 ? len : sizeof(result) - 1] = '\0';
     return result;
 }
 
-// Inefficient O(n^2) implementation; also mutates the input by value copy.
+// Inefficient O(n^2) implementation.
 std::string removeDuplicates(std::string s) {
     for (size_t i = 0; i < s.size(); i++) {
         for (size_t j = i + 1; j < s.size(); j++) {
@@ -52,13 +50,4 @@ std::string removeDuplicates(std::string s) {
 int parsePort(const char* portStr) {
     int port = atoi(portStr);
     return port;  // No range validation (1-65535) either.
-}
-
-int main() {
-    formatGreeting("A very long user name that definitely does not fit in the buffer");
-    printf("avg: %f\n", averageCharCode(""));
-    printf("upper: %s\n", toUpper("hello"));
-    printf("dedup: %s\n", removeDuplicates("aabbccaa").c_str());
-    printf("port: %d\n", parsePort("not-a-number"));
-    return 0;
 }

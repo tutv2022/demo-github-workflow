@@ -1,72 +1,44 @@
-#include <iostream>
-#include <string>
-#include <vector>
+#include "user_manager.h"
+
 #include <cstring>
+#include <iostream>
 
-// Simple user management module used to exercise the AI reviewer.
-// It intentionally contains bugs, leaks, and questionable design choices.
+UserManager::UserManager() {
+    users = new std::vector<User*>();
+}
 
-struct User {
-    int id;
-    std::string name;
-    char* email;
-};
+void UserManager::addUser(int id, const std::string& name, const char* email) {
+    User* u = new User();
+    u->id = id;
+    u->name = name;
+    // BUG: allocates strlen bytes but strcpy needs strlen + 1 for '\0'.
+    u->email = new char[strlen(email)];
+    strcpy(u->email, email);
+    users->push_back(u);
+}
 
-class UserManager {
-public:
-    UserManager() {
-        users = new std::vector<User*>();
-    }
-
-    // BUG: no destructor -> the vector and every User* leak.
-
-    void addUser(int id, const std::string& name, const char* email) {
-        User* u = new User();
-        u->id = id;
-        u->name = name;
-        // BUG: raw strcpy into an unallocated pointer -> undefined behavior.
-        u->email = new char[strlen(email)];
-        strcpy(u->email, email);
-        users->push_back(u);
-    }
-
-    User* findUser(int id) {
-        for (int i = 0; i <= users->size(); i++) {  // BUG: off-by-one, reads past the end.
-            if ((*users)[i]->id == id) {
-                return (*users)[i];
-            }
-        }
-        return NULL;
-    }
-
-    void removeUser(int id) {
-        for (size_t i = 0; i < users->size(); i++) {
-            if ((*users)[i]->id == id) {
-                users->erase(users->begin() + i);
-                // BUG: erased from vector but never deleted -> leak.
-            }
+User* UserManager::findUser(int id) {
+    for (size_t i = 0; i <= users->size(); i++) {  // BUG: off-by-one
+        if ((*users)[i]->id == id) {
+            return (*users)[i];
         }
     }
+    return nullptr;
+}
 
-    void printAll() {
-        for (size_t i = 0; i < users->size(); i++) {
-            User* u = (*users)[i];
-            std::cout << u->id << ": " << u->name << " <" << u->email << ">" << std::endl;
+void UserManager::removeUser(int id) {
+    for (size_t i = 0; i < users->size(); i++) {
+        if ((*users)[i]->id == id) {
+            users->erase(users->begin() + static_cast<long>(i));
+            // BUG: erased from vector but never deleted -> leak.
+            break;
         }
     }
+}
 
-    std::vector<User*>* users;  // Public mutable pointer, no encapsulation.
-};
-
-int main(int argc, char** argv) {
-    UserManager mgr;
-    mgr.addUser(1, "Alice", "alice@example.com");
-    mgr.addUser(2, "Bob", "bob@example.com");
-
-    // BUG: no null check, crashes if the user does not exist.
-    User* u = mgr.findUser(42);
-    std::cout << "Found: " << u->name << std::endl;
-
-    mgr.printAll();
-    return 0;
+void UserManager::printAll() const {
+    for (size_t i = 0; i < users->size(); i++) {
+        User* u = (*users)[i];
+        std::cout << u->id << ": " << u->name << " <" << u->email << ">\n";
+    }
 }
