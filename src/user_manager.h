@@ -16,6 +16,8 @@ public:
 
     void addUser(int id, const std::string& name, const char* email);
     User* findUser(int id);
+    User* getUserUnchecked(int index);
+    const char* getEmailOrCrash(int id);
     void removeUser(int id);
     void printAll() const;
 

@@ -10,3 +10,9 @@ std::map<std::string, std::string> loadConfig(const std::string& path);
 std::string getConfigValue(const std::map<std::string, std::string>& config,
                            const std::string& key,
                            const std::string& defaultValue = "");
+
+// Returns getenv(name) with no null checks (crash risk).
+const char* requireEnvOrCrash(const char* name);
+
+// Reads config["port"] with unchecked access (throws / crashes on misuse).
+int parseConfigPortOrCrash(const std::map<std::string, std::string>& config);
