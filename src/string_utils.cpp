@@ -5,14 +5,15 @@
 #include <cstdlib>
 #include <cstring>
 
-// BUG: fixed-size buffer with unbounded input -> classic buffer overflow.
+// BUG: fixed-size buffer with unbounded input -> classic buffer overflow crash.
 void formatGreeting(const char* name) {
     char buffer[32];
+    // BUG (nullPtr crash): name may be nullptr.
     sprintf(buffer, "Hello, %s! Welcome back.", name);
     printf("%s\n", buffer);
 }
 
-// BUG: division by zero when the string is empty.
+// BUG: division by zero crash when the string is empty.
 double averageCharCode(const std::string& s) {
     int sum = 0;
     for (size_t i = 0; i < s.size(); i++) {
@@ -21,9 +22,10 @@ double averageCharCode(const std::string& s) {
     return static_cast<double>(sum) / static_cast<double>(s.size());
 }
 
-// BUG: returns a pointer to a local (stack) buffer.
+// BUG: returns a pointer to a local (stack) buffer -> use-after-return crash/UB.
 const char* toUpper(const char* input) {
     char result[256];
+    // BUG (nullPtr crash): input may be nullptr.
     size_t len = strlen(input);
     for (size_t i = 0; i < len && i < sizeof(result) - 1; i++) {
         result[i] = static_cast<char>(toupper(static_cast<unsigned char>(input[i])));
@@ -32,22 +34,30 @@ const char* toUpper(const char* input) {
     return result;
 }
 
-// Inefficient O(n^2) implementation.
 std::string removeDuplicates(std::string s) {
     for (size_t i = 0; i < s.size(); i++) {
         for (size_t j = i + 1; j < s.size(); j++) {
             if (s[i] == s[j]) {
                 s.erase(j, 1);
-                // BUG: j is not decremented after erase, so consecutive
-                // duplicates are skipped.
+                // BUG: j is not decremented after erase.
             }
         }
     }
     return s;
 }
 
-// BUG: atoi silently returns 0 on invalid input, no error handling.
+// BUG: atoi silently returns 0 on invalid input; nullptr input crashes.
 int parsePort(const char* portStr) {
+    // BUG (nullPtr crash): no check before atoi(portStr).
     int port = atoi(portStr);
-    return port;  // No range validation (1-65535) either.
+    return port;
+}
+
+const char* firstCharAsCString(const char* text) {
+    // BUG (nullPtr crash): dereferences text with no null check.
+    // Also returns address of a temporary/local-style misuse via static buffer overwrite.
+    static char one[2];
+    one[0] = text[0];
+    one[1] = '\0';
+    return one;
 }

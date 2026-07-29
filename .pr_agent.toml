@@ -4,9 +4,9 @@ max_model_tokens = 32000
 
 [pr_reviewer]
 extra_instructions = """
-- Focus on logic, edge cases, and architectural alignment.
+- Focus on logic, edge cases, null pointer, and architectural alignment.
 - Flag hardcoded secrets or environment variables.
-- Check for N+1 query patterns in data fetching.
 - Ensure new public methods have documentation comments.
+- Provide code suggestion to fix issues
 """
 inline_code_comments = true

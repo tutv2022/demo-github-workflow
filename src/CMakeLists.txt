@@ -1,6 +1,7 @@
 # Core library (shared modules used by the app and optional tests)
 add_library(demo_core
     config_loader.cpp
+    crash_bugs.cpp
     string_utils.cpp
     user_manager.cpp
 )
